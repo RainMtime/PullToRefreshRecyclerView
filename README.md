@@ -1,0 +1,2 @@
+# PullToRefreshRecyclerView
+一个有下拉刷新能力的RecyclerView，交互效果类似与PullToRefreshListView
