@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+    <item
+        android:drawable="@drawable/bg_refresh_step01"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step02"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step03"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step04"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step05"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step06"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step07"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step08"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step09"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step10"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step11"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step12"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step13"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step14"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step15"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step16"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step17"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step18"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step19"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step20"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step21"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step22"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step23"
+        android:duration="42" />
+    <item
+        android:drawable="@drawable/bg_refresh_step24"
+        android:duration="42" />
+
+</animation-list>
