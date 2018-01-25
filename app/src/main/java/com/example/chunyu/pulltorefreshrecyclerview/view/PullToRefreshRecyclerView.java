@@ -25,6 +25,8 @@ import android.widget.TextView;
 import com.example.chunyu.pulltorefreshrecyclerview.R;
 import com.example.chunyu.pulltorefreshrecyclerview.Utils.DateUtils;
 
+import java.util.ArrayList;
+
 /**
  * Created by 人间一小雨 on 2018/1/21 下午12:31
  * Email: 746431278@qq.com
@@ -49,8 +51,6 @@ public class PullToRefreshRecyclerView extends LinearLayout {
 
 
     private final RecyclerView.AdapterDataObserver dataObserver = new DataObserver();
-
-    private PullToRefreshRecyclerView.LoadLayout mLoadingView;
 
 
     private static final String TAG = "PullToRefresh";
@@ -85,6 +85,10 @@ public class PullToRefreshRecyclerView extends LinearLayout {
     private static final int RELEASE_TO_REFRESH = 0x1;
     private static final int REFRESHING = 0x2;
     private static final int MANUAL_REFRESHING = 0x3;
+
+    private int mLoadingViewState = LoadLayout.HIDE;
+
+    ArrayList<LoadLayout> mLoadingViews = new ArrayList<>();
 
     private boolean mDisableScrollingWhileRefreshing = true;
 
@@ -128,13 +132,7 @@ public class PullToRefreshRecyclerView extends LinearLayout {
         addViewInternal(mRecyclerView, -1, new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1.0f));
         mHeaderRefreshLoadingView = new RefreshHeaderLoadingLayout(context, null);
         updateUIForMode();
-        //加载更多的View
-        mLoadingView = new PullToRefreshRecyclerView.LoadLayout(context, new Runnable() {
-            @Override
-            public void run() {
-                doLoadMoreOperation(EventSource.MANUAL);
-            }
-        });
+
         // 空页面数据的View
         mNoDataEmptyView = new DefaultEmptyView(context);
         // Todo Styleables from XML
@@ -226,9 +224,19 @@ public class PullToRefreshRecyclerView extends LinearLayout {
     public void setEnableLoadMore(boolean enableLoadMore) {
         if (mEnableLoadMore != enableLoadMore) {
             mEnableLoadMore = enableLoadMore;
-            mLoadingView.setState(mEnableLoadMore ? PullToRefreshRecyclerView.LoadLayout.LOAD_MORE_PENDING : PullToRefreshRecyclerView.LoadLayout.HIDE);
+            setStateForLoadingViews(mEnableLoadMore ? LoadLayout.LOAD_MORE_PENDING : LoadLayout.HIDE);
             if (mRecyclerViewAdapterWrapper != null) {
                 mRecyclerViewAdapterWrapper.notifyDataSetChanged();
+            }
+        }
+    }
+
+    private void setStateForLoadingViews(int state) {
+        mLoadingViewState = state;
+        for (LoadLayout item : mLoadingViews) {
+            if (item != null) {
+                //改变LoaidngView本身的状态。
+                item.setState(state);
             }
         }
     }
@@ -240,14 +248,10 @@ public class PullToRefreshRecyclerView extends LinearLayout {
      */
     public void setLoadMoreComplete(boolean hasMore) {
         if (hasMore) {
-            mLoadingView.setState(PullToRefreshRecyclerView.LoadLayout.LOAD_MORE_PENDING);
+            setStateForLoadingViews(LoadLayout.LOAD_MORE_PENDING);
         } else {
-            mLoadingView.setState(PullToRefreshRecyclerView.LoadLayout.NO_MORE_DATA);
+            setStateForLoadingViews(LoadLayout.NO_MORE_DATA);
         }
-    }
-
-    public void setLoadMoreTextNoMore(String noMoreText) {
-        mLoadingView.setNoMoreDataText(noMoreText);
     }
 
 
@@ -527,7 +531,6 @@ public class PullToRefreshRecyclerView extends LinearLayout {
         if (mState != PULL_TO_REFRESH) {
             resetHeader();
             onRefreshComplete(succeed);
-            // TODO: 2017/9/25 refreshListener
             if (null != mOnRefreshListener) {
                 mOnRefreshListener.onRefreshComplete(this);
             }
@@ -975,11 +978,11 @@ public class PullToRefreshRecyclerView extends LinearLayout {
             return;
         }
 
-        if (!mLoadingView.checkState(PullToRefreshRecyclerView.LoadLayout.LOADING_MORE)) {
+        if (!LoadLayout.checkStateSwitch(mLoadingViewState, LoadLayout.LOADING_MORE)) {
             return;
         }
 
-        mLoadingView.setState(PullToRefreshRecyclerView.LoadLayout.LOADING_MORE);
+        setStateForLoadingViews(LoadLayout.LOADING_MORE);
 
         if (null != mOnLoadMoreListener) {
             mOnLoadMoreListener.onLoadMore(source);
@@ -1063,7 +1066,17 @@ public class PullToRefreshRecyclerView extends LinearLayout {
                 case TYPE_EMPTY_VIEW:
                     return createEmptyView(mNoDataEmptyView);
                 case TYPE_LOADING_VIEW:
-                    return createLoadingViewViewHolder(mLoadingView);
+                    LoadLayout loadLayout = new LoadLayout(getContext(), new Runnable() {
+                        @Override
+                        public void run() {
+                            doLoadMoreOperation(EventSource.MANUAL);
+                        }
+                    });
+
+                    if (!mLoadingViews.contains(loadLayout)) {
+                        mLoadingViews.add(loadLayout);
+                    }
+                    return createLoadingViewViewHolder(loadLayout);
                 default:
                     return mAdapter.onCreateViewHolder(parent, viewType);
             }
@@ -1071,7 +1084,6 @@ public class PullToRefreshRecyclerView extends LinearLayout {
 
         @NonNull
         protected PullToRefreshRecyclerView.EmptyViewViewHolder createEmptyView(View itemView) {
-            removeViewFromParent(itemView);
             RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
             itemView.setLayoutParams(params);
@@ -1080,8 +1092,7 @@ public class PullToRefreshRecyclerView extends LinearLayout {
 
 
         @NonNull
-        protected PullToRefreshRecyclerView.LoadingViewViewHolder createLoadingViewViewHolder(View itemView) {
-            removeViewFromParent(itemView);
+        protected PullToRefreshRecyclerView.LoadingViewViewHolder createLoadingViewViewHolder(LoadLayout itemView) {
             RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
             itemView.setLayoutParams(params);
@@ -1090,15 +1101,24 @@ public class PullToRefreshRecyclerView extends LinearLayout {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            if (position < mAdapter.getItemCount()) {
-                mAdapter.onBindViewHolder(viewHolder, position);
+            if (!isOriginAdapterEmpty()) {
+                if (position < mAdapter.getItemCount()) {
+                    mAdapter.onBindViewHolder(viewHolder, position);
+                } else {
+                    bindLoadingViewHolder(viewHolder);
+                }
             } else {
-                bindLoadingViewHolder(viewHolder);
+                bindEmptyViewHolder(viewHolder);
             }
         }
 
         protected void bindLoadingViewHolder(RecyclerView.ViewHolder holder) {
-            // do nothing
+            LoadingViewViewHolder viewViewHolder = (LoadingViewViewHolder) holder;
+            viewViewHolder.renderView(mLoadingViewState);
+        }
+
+        protected void bindEmptyViewHolder(RecyclerView.ViewHolder holder) {
+            //
         }
 
         @Override
@@ -1134,8 +1154,15 @@ public class PullToRefreshRecyclerView extends LinearLayout {
 
 
     private static final class LoadingViewViewHolder extends RecyclerView.ViewHolder {
-        public LoadingViewViewHolder(View itemView) {
+        private LoadLayout mLoadLayout;
+
+        public LoadingViewViewHolder(LoadLayout itemView) {
             super(itemView);
+            mLoadLayout = itemView;
+        }
+
+        public void renderView(int state) {
+            mLoadLayout.setState(state);
         }
     }
 
@@ -1195,16 +1222,6 @@ public class PullToRefreshRecyclerView extends LinearLayout {
 
     public interface OnLoadMoreListener {
         boolean onLoadMore(EventSource source);
-    }
-
-    public static void removeViewFromParent(View view) {
-        if (view == null) {
-            return;
-        }
-        ViewGroup parent = (ViewGroup) view.getParent();
-        if (parent != null) {
-            parent.removeView(view);
-        }
     }
 
 
@@ -1376,7 +1393,7 @@ public class PullToRefreshRecyclerView extends LinearLayout {
             return true;
         }
 
-        private boolean checkStateSwitch(int oldState, int newState) {
+        public static boolean checkStateSwitch(int oldState, int newState) {
             if (oldState < 0) {
                 return true;
             }
