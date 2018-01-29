@@ -3,21 +3,25 @@
 # 概述
 一个有下拉刷新能力的RecyclerView，交互效果类似与PullToRefreshListView
 
-#特点如下
+# 特点如下
 - 支持下拉刷新效果如下图
 - 支持加载更多效果
 - 支持adapter中data为empty的时候，加载更多效果
 
-#效果图如下：
+# 效果图如下：
+
 - 下拉刷新效果：
+
 ![pull01](https://lh3.googleusercontent.com/-vLpZeu04yy4/Wm7FhsnDPLI/AAAAAAAAEy8/tyRGnsIJKaE8pNignzAiKwzWn_jdEO13gCHMYCw/I/pull01.gif)
 
 
 - 加载更多效果： 
+
 ![pull02](https://lh3.googleusercontent.com/-OlunKjTqP6E/Wm7FjJUoSQI/AAAAAAAAEzA/6u7z7xE5XTYqqVlYTUjG_-l4bfXdUzs9QCHMYCw/I/pull02.gif)
 
 
 - 空界面效果：
+
 ![pull3](https://lh3.googleusercontent.com/-YtbnsbuVI2w/Wm7FAW_dJwI/AAAAAAAAExk/4GyfPabWmH8j_InLMY5VJKtqx1lSDpwdACHMYCw/I/pull3.gif)
 
 
@@ -36,6 +40,7 @@
 
 
 - 简单的demo代码如下：
+
 ```
 
   //设置下拉刷新模式（还有一种DISABLE）模式，此种模式不具备下拉刷新能力
@@ -83,7 +88,7 @@
 
 ```
 
-#实现原理：
+# 实现原理：
 
 - 下拉效果，主要是利用LinearLayout的设置-padding的效果，把头部的刷新view 给隐藏了起来。然后就处理下拉事件，改变状态即可
 - 加载更多效果，主要是把LoadingView 当作Adapter中的一个item进行处理
