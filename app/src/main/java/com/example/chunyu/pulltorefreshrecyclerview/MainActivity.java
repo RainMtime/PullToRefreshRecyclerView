@@ -32,10 +32,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         mPullToRefreshRecyclerView = (PullToRefreshRecyclerView) findViewById(R.id.pulltorefreshrecyclerview);
+
+        //设置下拉刷新模式（还有一种DISABLE）模式，此种模式不具备下拉刷新能力
+        mPullToRefreshRecyclerView.setMode(PullToRefreshRecyclerView.Mode.PULL_DOWN_TO_REFRESH);
+        //设置是否支持加载更多的能力
         mPullToRefreshRecyclerView.setEnableLoadMore(true);
+
+        //当设置能加载更多，可以设置加载更多监听
         mPullToRefreshRecyclerView.setOnLoadMoreListener(new PullToRefreshRecyclerView.OnLoadMoreListener() {
             @Override
             public boolean onLoadMore(PullToRefreshRecyclerView.EventSource source) {
+                //onLoadMore 动作就是当内容滑倒底部的时候，进行加载更多时候进行调用
+                //一般这里放上加载更多的请求，下面模拟一下数据回来了。
                 mPullToRefreshRecyclerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -46,9 +54,13 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        //当设置的MODE 为PULL_DOWN_TO_REFRESH 的时候，可以设置加载更多监听
         mPullToRefreshRecyclerView.setOnRefreshListener(new PullToRefreshRecyclerView.OnRefreshListener() {
             @Override
             public void onRefresh(PullToRefreshRecyclerView refreshView) {
+                //onRefresh 中动作就是当下拉超过距离的阀值，准备刷新的时候调用
+                //一般这里放置刷新请求的动作，下面进行模拟这个动作。
                 mPullToRefreshRecyclerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {

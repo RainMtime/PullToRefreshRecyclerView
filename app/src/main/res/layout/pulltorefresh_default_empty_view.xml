@@ -17,6 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:scaleType="centerInside"
+            android:src="@drawable/ic_blank_noweb"
             tools:src="@drawable/ic_blank_noweb" />
 
         <TextView
@@ -29,6 +30,7 @@
             android:textColor="#8c8d91"
             android:textSize="13sp"
             android:visibility="visible"
+            android:text="自定义文案如（数据为空）"
             tools:text="描述1" />
 
         <Button
@@ -40,7 +42,7 @@
             android:textColor="#DBB76C"
             android:textSize="13sp"
             android:visibility="gone"
-            tools:text="去看看"
+            tools:text="自定义文案按钮"
             tools:visibility="visible" />
     </LinearLayout>
 
