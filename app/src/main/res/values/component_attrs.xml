@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="PullToRefresh">
+        <attr name="ptrPaddingLeft" format="reference|dimension" />
+        <attr name="ptrPaddingTop" format="reference|dimension" />
+        <attr name="ptrPaddingRight" format="reference|dimension" />
+        <attr name="ptrPaddingBottom" format="reference|dimension" />
+    </declare-styleable>
+</resources>

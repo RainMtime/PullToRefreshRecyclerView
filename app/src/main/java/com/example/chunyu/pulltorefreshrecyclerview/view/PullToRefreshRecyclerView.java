@@ -1,6 +1,7 @@
 package com.example.chunyu.pulltorefreshrecyclerview.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -132,10 +133,18 @@ public class PullToRefreshRecyclerView extends LinearLayout {
         addViewInternal(mRecyclerView, -1, new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1.0f));
         mHeaderRefreshLoadingView = new RefreshHeaderLoadingLayout(context, null);
         updateUIForMode();
-
         // 空页面数据的View
         mNoDataEmptyView = new DefaultEmptyView(context);
         // Todo Styleables from XML
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PullToRefresh);
+        int paddingLeft = a.getDimensionPixelOffset(R.styleable.PullToRefresh_ptrPaddingLeft, 0);
+        int paddingTop = a.getDimensionPixelOffset(R.styleable.PullToRefresh_ptrPaddingTop, 0);
+        int paddingRight = a.getDimensionPixelOffset(R.styleable.PullToRefresh_ptrPaddingRight, 0);
+        int paddingBottom = a.getDimensionPixelOffset(R.styleable.PullToRefresh_ptrPaddingBottom, 0);
+        setPullPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+        a.recycle();
+        a = null;
     }
 
     /**
@@ -291,16 +300,17 @@ public class PullToRefreshRecyclerView extends LinearLayout {
         }
 
     }
-    // 暂不开启，先保留
-    //    public final void setPullPadding(int left, int top, int right, int bottom) {
-    //        if (mPaddingLeft != left || mPaddingTop != top || mPaddingRight != right || mPaddingBottom != bottom) {
-    //            mPaddingLeft = left;
-    //            mPaddingRight = right;
-    //            mPaddingTop = top;
-    //            mPaddingBottom = bottom;
-    //            refreshHeaderLoadingViewsHeight();
-    //        }
-    //    }
+
+    //设置pulltorefreshRecyclerView的padding值。
+    public final void setPullPadding(int left, int top, int right, int bottom) {
+        if (mPaddingLeft != left || mPaddingTop != top || mPaddingRight != right || mPaddingBottom != bottom) {
+            mPaddingLeft = left;
+            mPaddingRight = right;
+            mPaddingTop = top;
+            mPaddingBottom = bottom;
+            refreshHeaderLoadingViewsHeight();
+        }
+    }
 
 
     @NonNull
